@@ -1,6 +1,5 @@
 import csv
 import re
-import sys
 import socket
 from datetime import datetime
 from threading import Thread
@@ -38,6 +37,7 @@ def latLonParse(degrees, minutes, direction):
         dd = float(degrees) + float(minutes) / 60
         if direction.upper() == 'W' or direction.upper() == 'S':
             dd *= -1
+        dd = round(dd, 6)
         return dd
     except:
         return None
@@ -64,8 +64,7 @@ def getRowFromData(aData):
                attrNames[5]: attrValues[5],
                attrNames[6]: lat,
                attrNames[7]: lon,
-               attrNames[8]: placeName,
-               attrNames[9]: datetime.now()}
+               attrNames[8]: placeName}
         return row
     except:
         return None
@@ -83,17 +82,20 @@ def clientHandler(conn, client_address):
         if not data:
             break
     conn.close()
+    time = datetime.now()
     for line in allData.splitlines():
         print('{}:{} sent ({} chars) : "{}"'.format(*client_address, len(line), line))
         rowOfData = getRowFromData(line)
+        rowOfData[attrNames[9]] = time
         if rowOfData:
             try:
                 history.insert_one(rowOfData)
                 currentState.delete_many({attrNames[1]: rowOfData[attrNames[1]]})
                 currentState.insert_one(rowOfData)
             except errors.ServerSelectionTimeoutError:
-                print('mongo disconnected')
-
+                print('mongodb disconnected...')
+                os.startfile(mongodPath)
+                print('mongodb connected again')
     print('disconnecting from {}:{} '.format(*client_address))
 
 

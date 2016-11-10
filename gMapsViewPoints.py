@@ -14,6 +14,7 @@ def getModems():
             '$group': {
                 '_id': {
                     'Modem ID': '$Modem ID',
+                    'Date': '$Date',
                     'Latitude': '$Latitude',
                     'Longitude': '$Longitude'
                 },
@@ -28,13 +29,13 @@ def getModems():
 
     ]):
         try:
-            lat = float(doc['_id']['Latitude'])
-            lon = float(doc['_id']['Longitude'])
-            info = 'Modem ID:' + doc['_id']['Modem ID']
+            lat = doc['_id']['Latitude']
+            lon = doc['_id']['Longitude']
+            info = '<h3>Modem ID:{} ({})</h3>'.format(doc['_id']['Modem ID'], doc['_id']['Date'])
             for unit in doc['units']:
                 info += '<br>'
-                for field in unit:
-                    info += '{}: {}\t'.format(field, unit[field])
+                info += '{}: {}\t'.format('Unit ID', unit['Unit ID'])
+                info += '{}: {}\t'.format('MCU_TEMPERATURE', unit['MCU_TEMPERATURE'])
             yield (lat, lon, info)
         except TypeError:
             pass
