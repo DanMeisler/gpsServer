@@ -61,6 +61,7 @@ class Map(object):
             map: map
         }});
         google.maps.event.addListener(marker, 'click', function() {{
+            infoWindow.close();
             infoWindow = new google.maps.InfoWindow({{
                 content: "{info}"
             }});
@@ -73,7 +74,10 @@ class Map(object):
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDScN9rVkda4l9rzwRT-xb-3jdCdnO_bY&v=3.exp&sensor=false"></script>
     <div id="map-canvas" style="height: 100%; width: 100%"></div>
 <script type="text/javascript">
-    var map, marker, infoWindow;
+    var map, marker;
+    var infoWindow = new google.maps.InfoWindow({{
+                content: ""
+            }});
     function show_map() {{
         map = new google.maps.Map(document.getElementById("map-canvas"), {{
             zoom: 8,
