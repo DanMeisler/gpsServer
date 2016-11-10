@@ -43,7 +43,7 @@ def latLonParse(degrees, minutes, direction):
         return None
 
 
-def getRowFromData(aData):
+def getRowFromData(aData, time):
     try:
         attrValues = re.split("MID|UID|\$|VB|TPM|TPS", aData)[1:]
         placeName = ''
@@ -64,7 +64,8 @@ def getRowFromData(aData):
                attrNames[5]: attrValues[5],
                attrNames[6]: lat,
                attrNames[7]: lon,
-               attrNames[8]: placeName}
+               attrNames[8]: placeName,
+               attrNames[9]: time}
         return row
     except:
         return None
@@ -85,8 +86,7 @@ def clientHandler(conn, client_address):
     time = datetime.now()
     for line in allData.splitlines():
         print('{}:{} sent ({} chars) : "{}"'.format(*client_address, len(line), line))
-        rowOfData = getRowFromData(line)
-        rowOfData[attrNames[9]] = time
+        rowOfData = getRowFromData(line, time)
         if rowOfData:
             try:
                 history.insert_one(rowOfData)
