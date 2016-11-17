@@ -1,5 +1,6 @@
 from consts import *
 from pymongo import MongoClient
+import os
 
 
 os.startfile(mongodPath)
@@ -70,7 +71,10 @@ class Map(object):
                 infoWindow.close();
             }});
         }});""".format(lat=x[0], lon=x[1], info=x[2]) for x in self._points])
-        return """
+        return """<?php
+    require_once('authenticate.php');
+    unlink('map.php');
+?>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDScN9rVkda4l9rzwRT-xb-3jdCdnO_bY&v=3.exp&sensor=false"></script>
     <div id="map-canvas" style="height: 100%; width: 100%"></div>
 <script type="text/javascript">

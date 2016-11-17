@@ -1,4 +1,5 @@
 import sys
+import os
 from datetime import datetime
 from consts import *
 from pymongo import MongoClient
@@ -27,6 +28,7 @@ def createHtml(dateFilter):
                 doc[attrNames[9]]) for doc in history.find(dateFilter)])
     return """<?php
     require_once('authenticate.php');
+    unlink('history.php');
 ?>
 <table style='border:1px solid red border-collapse:collapse' border='1px'>
     <thead>

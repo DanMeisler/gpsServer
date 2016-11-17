@@ -1,7 +1,7 @@
 import csv
 import sys
 from datetime import datetime
-
+import os
 from consts import *
 from pymongo import MongoClient
 

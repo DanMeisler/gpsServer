@@ -1,6 +1,7 @@
 import sys
 from pymongo import MongoClient
 from consts import *
+import os
 
 os.startfile(mongodPath)
 mongoClient = MongoClient()
