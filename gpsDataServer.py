@@ -1,4 +1,4 @@
-import csv
+from getAreasKml import getAreas
 import re
 import socket
 from datetime import datetime
@@ -21,17 +21,6 @@ def get_ip():
     return IP
 
 
-def getAreasAsPolys():  # return area from areas.csv file in Name,Points format
-    with open(pathAreas, 'r') as pa:
-        reader = csv.DictReader(pa)
-        for row in reader:
-            poly = []
-            points = row['Points'].split('#')
-            for point in points:
-                poly.append((float(point.split(',')[1]), float(point.split(',')[0])))
-            yield row['Name'], poly
-
-
 def latLonParse(degrees, minutes, direction):
     try:
         dd = float(degrees) + float(minutes) / 60
@@ -52,7 +41,7 @@ def getRowFromData(aData, time):
         lon = latLonParse(gps_data[4][:3], gps_data[4][3:], gps_data[5])
         if (not lat) or (not lon):
             return None
-        for name, area in getAreasAsPolys():
+        for name, area in getAreas(pathAreas):
             if polygon.point_inside_polygon(lat, lon, area):
                 placeName = name
                 break

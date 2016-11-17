@@ -2,7 +2,7 @@ import os
 
 
 mongodPath = r'C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe'
-pathAreas = os.getcwd() + r'\areas.csv'
+pathAreas = os.getcwd() + r'\areas.kml'
 attrNames = ['Modem ID', 'Unit ID', 'GPS_DATA', 'Bat voltage indicate', 'MCU_TEMPERATURE', 'Ex_TEMP_Sensor',
              'Latitude', 'Longitude', 'Area', 'Date']
 pathCurrentStateCsv = r'C:\Program Files (x86)\EasyPHP-Webserver-14.1b2\www\currentState.csv'
