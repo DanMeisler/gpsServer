@@ -1,3 +1,4 @@
+import os
 from getAreasKml import getAreas
 import re
 import socket
@@ -47,7 +48,7 @@ def getRowFromData(aData, time):
                 break
         row = {attrNames[0]: attrValues[0],
                attrNames[1]: attrValues[1],
-               attrNames[2]: attrValues[2],
+               attrNames[2]: '$' + attrValues[2],
                attrNames[3]: attrValues[3],
                attrNames[4]: attrValues[4],
                attrNames[5]: attrValues[5],
