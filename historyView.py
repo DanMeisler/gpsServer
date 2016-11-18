@@ -30,15 +30,22 @@ def createHtml(dateFilter):
     require_once('authenticate.php');
     unlink('history.php');
 ?>
-<link rel="stylesheet" type="text/css" href="./DataTables/datatables.css">
+
+
+
+
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="./DataTables/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" charset="utf8" src="./DataTables/datatables.js"></script>
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
 <script type="text/javascript" charset="utf8">
     $(document).ready( function () {{
-        $('#history_table').DataTable();
+        $('#history_table').DataTable({{
+        "scrollY": 200,
+        "scrollX": true
+        }});
     }} );
 </script>
-<table id="history_table">
+<table id="history_table" class="display" cellspacing="0" width="100%">
     <thead>
     <tr>
         <th>{}</th>
