@@ -123,6 +123,8 @@ def textPhp():
     </thead>
     <tbody>
         {}
+    <div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('/images/logo.png');">
+    </div>
     </tbody>
 </table>""".format(*attrNames, dataRows)
 

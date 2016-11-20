@@ -73,6 +73,7 @@ class Map(object):
         return """<?php
     require_once('authenticate.php');
 ?>
+<link rel="stylesheet" href="css/style.css">
 <script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.12.3.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDScN9rVkda4l9rzwRT-xb-3jdCdnO_bY"></script>
 <script type="text/javascript">
@@ -108,11 +109,13 @@ class Map(object):
     google.maps.event.addDomListener(window, 'load', initMap);
 </script>
 <div id="map-canvas" style="height: 100%; width: 100%"></div>
-<div id="controls" style="position: fixed;top: 20;right: 20; width: 150px; height: 150px;">
-    <button onclick="window.location.href='/currentState.php'">current state view</button>
+<div id="controls" style="position: fixed;top: 20;right: 20;">
+    <button class="button buttonBlue" onclick="window.location.href='/currentState.php'">current state view</button>
     <br>
     <br>
-    <button onclick="window.location.href='/history.php'">history view</button>
+    <button class="button buttonBlue" onclick="window.location.href='/history.php'">history view</button>
+</div>
+<div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('/images/logo.png');">
 </div>
 """.format(centerLat=centerLat, centerLon=centerLon,
            markersCode=markersCode)
