@@ -5,6 +5,9 @@ import socket
 from datetime import datetime
 from threading import Thread
 import polygon
+import historyView
+import currentStateView
+import gMapsViewPoints
 from consts import *
 from pymongo import MongoClient, errors
 
@@ -62,15 +65,17 @@ def getRowFromData(aData, time):
 
 
 def clientHandler(conn, client_address):
+    conn.settimeout(30)  # timeout in 30 seconds
     print('Connection from {}:{} '.format(*client_address))
     allData = ''
     while True:
         try:
             data = conn.recv(1024).decode('utf-8')
-        except ConnectionResetError:
-            break
-        allData += data
-        if not data:
+            if data:
+                allData += data
+            else:
+                break
+        except:
             break
     conn.close()
     time = datetime.now()
@@ -86,6 +91,13 @@ def clientHandler(conn, client_address):
                 print('mongodb disconnected...')
                 os.startfile(mongodPath)
                 print('mongodb connected again')
+    # update php files
+    with open(pathHistory, "w") as hOut:
+        print(historyView.createPhp(), file=hOut)
+    with open(pathCurrentState, "w") as cOut:
+        print(currentStateView.createPhp(), file=cOut)
+    with open(pathMap, "w") as mOut:
+        print(gMapsViewPoints.createPhp(), file=mOut)
     print('disconnecting from {}:{} '.format(*client_address))
 
 

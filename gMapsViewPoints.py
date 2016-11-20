@@ -2,7 +2,6 @@ from consts import *
 from pymongo import MongoClient
 import os
 
-
 os.startfile(mongodPath)
 mongoClient = MongoClient()
 db = mongoClient['gpsDB']
@@ -73,11 +72,30 @@ class Map(object):
         }});""".format(lat=x[0], lon=x[1], info=x[2]) for x in self._points])
         return """<?php
     require_once('authenticate.php');
-    unlink('map.php');
 ?>
+<script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.12.3.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDScN9rVkda4l9rzwRT-xb-3jdCdnO_bY&v=3.exp&sensor=false"></script>
-    <div id="map-canvas" style="height: 100%; width: 100%"></div>
 <script type="text/javascript">
+    $(document).ready(function() {{
+        // Detect page change / auto refresh
+        var currenthtml;
+        var latesthtml;
+        $.get(window.location.href, function(data) {{
+            currenthtml = data;
+            latesthtml = data;
+        }});
+
+        setInterval(function() {{
+
+            $.get(window.location.href, function(data) {{
+                latesthtml = data;
+            }});
+
+            if(currenthtml != latesthtml) {{
+                location.reload();
+            }}
+        }}, 5000);
+    }});
     var map, marker;
     var infoWindow = new google.maps.InfoWindow({{
                 content: ""
@@ -90,13 +108,19 @@ class Map(object):
 {markersCode}
 }}
     google.maps.event.addDomListener(window, 'load', show_map);
-</script>""".format(centerLat=centerLat, centerLon=centerLon,
-                    markersCode=markersCode)
+</script>
+<div id="map-canvas" style="height: 100%; width: 100%"></div>
+""".format(centerLat=centerLat, centerLon=centerLon,
+           markersCode=markersCode)
 
 
-if __name__ == "__main__":
+def createPhp():
     aMap = Map()
     for point in getModems():
         aMap.add_point(point)
+    return aMap
+
+
+if __name__ == "__main__":
     with open(pathMap, "w") as out:
-        print(aMap, file=out)
+        print(createPhp(), file=out)

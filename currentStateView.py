@@ -2,13 +2,12 @@ import os
 from consts import *
 from pymongo import MongoClient
 
-os.startfile(mongodPath)
-mongoClient = MongoClient()
-db = mongoClient['gpsDB']
-currentState = db['currentState']
 
-
-def createHtml():
+def createPhp():
+    os.startfile(mongodPath)
+    mongoClient = MongoClient()
+    db = mongoClient['gpsDB']
+    currentState = db['currentState']
     dataRows = "\n".join(["""<tr>
     <td>{}</td>
     <td>{}</td>
@@ -26,7 +25,6 @@ def createHtml():
                 doc[attrNames[9]]) for doc in currentState.find()])
     return """<?php
     require_once('authenticate.php');
-    unlink('currentState.php');
 ?>
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css">
@@ -58,6 +56,24 @@ def createHtml():
         }}
     );
     $(document).ready( function () {{
+        // Detect page change / auto refresh
+        var currenthtml;
+        var latesthtml;
+
+        $.get(window.location.href, function(data) {{
+            currenthtml = data;
+            latesthtml = data;
+        }});
+
+        setInterval(function() {{
+            $.get(window.location.href, function(data) {{
+                latesthtml = data;
+            }});
+
+            if(currenthtml != latesthtml) {{
+                location.reload();
+            }}
+        }}, 5000);
         var table = $('#currentState_table').DataTable({{
             dom: 'Bfrtip',
             buttons: [
@@ -112,4 +128,4 @@ def createHtml():
 
 if __name__ == "__main__":
     with open(pathCurrentState, "w") as out:
-        print(createHtml(), file=out)
+        print(createPhp(), file=out)
