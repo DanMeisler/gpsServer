@@ -3,7 +3,7 @@ from consts import *
 from pymongo import MongoClient
 
 
-def createPhp():
+def textPhp():
     os.startfile(mongodPath)
     mongoClient = MongoClient()
     db = mongoClient['gpsDB']
@@ -84,6 +84,7 @@ def createPhp():
                     pageSize: 'LEGAL'
                 }}, 'print'
             ],
+            stateSave: true,
             "scrollY": 200,
             "scrollX": true
         }});
@@ -126,6 +127,10 @@ def createPhp():
 </table>""".format(*attrNames, dataRows)
 
 
-if __name__ == "__main__":
+def createPhp():
     with open(pathCurrentState, "w") as out:
-        print(createPhp(), file=out)
+        print(textPhp(), file=out)
+
+
+if __name__ == "__main__":
+    createPhp()

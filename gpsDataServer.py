@@ -92,12 +92,9 @@ def clientHandler(conn, client_address):
                 os.startfile(mongodPath)
                 print('mongodb connected again')
     # update php files
-    with open(pathHistory, "w") as hOut:
-        print(historyView.createPhp(), file=hOut)
-    with open(pathCurrentState, "w") as cOut:
-        print(currentStateView.createPhp(), file=cOut)
-    with open(pathMap, "w") as mOut:
-        print(gMapsViewPoints.createPhp(), file=mOut)
+    historyView.createPhp()
+    currentStateView.createPhp()
+    gMapsViewPoints.createPhp()
     print('disconnecting from {}:{} '.format(*client_address))
 
 
