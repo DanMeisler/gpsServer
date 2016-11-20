@@ -84,32 +84,36 @@ class Map(object):
             currenthtml = data;
             latesthtml = data;
         }});
-
         setInterval(function() {{
-
             $.get(window.location.href, function(data) {{
                 latesthtml = data;
             }});
-
             if(currenthtml != latesthtml) {{
                 location.reload();
             }}
         }}, 5000);
     }});
+
     var map, marker;
     var infoWindow = new google.maps.InfoWindow({{
-                content: ""
-            }});
-    function show_map() {{
+        content: ""
+    }});
+    function initMap() {{
         map = new google.maps.Map(document.getElementById("map-canvas"), {{
-            zoom: 8,
-            center: new google.maps.LatLng({centerLat}, {centerLon})
-        }});
-{markersCode}
-}}
-    google.maps.event.addDomListener(window, 'load', show_map);
+                zoom: 8,
+                center: new google.maps.LatLng({centerLat}, {centerLon})
+            }});
+        {markersCode}
+    }}
+    google.maps.event.addDomListener(window, 'load', initMap);
 </script>
 <div id="map-canvas" style="height: 100%; width: 100%"></div>
+<div id="controls" style="position: fixed;top: 20;right: 20; width: 150px; height: 150px;">
+    <button onclick="window.location.href='/currentState.php'">current state view</button>
+    <br>
+    <br>
+    <button onclick="window.location.href='/history.php'">history view</button>
+</div>
 """.format(centerLat=centerLat, centerLon=centerLon,
            markersCode=markersCode)
 

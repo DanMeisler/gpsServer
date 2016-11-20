@@ -4,6 +4,6 @@ attrNames = ['Modem ID', 'Unit ID', 'GPS_DATA', 'Bat voltage indicate', 'MCU_TEM
              'Latitude', 'Longitude', 'Area', 'Date']
 pathCurrentStateCsv = r'C:\Program Files (x86)\EasyPHP-Webserver-14.1b2\www\currentState.csv'
 pathCurrentState = r'C:\Program Files (x86)\EasyPHP-Webserver-14.1b2\www\currentState.php'
-pathMap = r'C:\Program Files (x86)\EasyPHP-Webserver-14.1b2\www\map.php'
+pathMap = r'C:\Program Files (x86)\EasyPHP-Webserver-14.1b2\www\index.php'
 pathHistoryCsv = r'C:\Program Files (x86)\EasyPHP-Webserver-14.1b2\www\history.csv'
 pathHistory = r'C:\Program Files (x86)\EasyPHP-Webserver-14.1b2\www\history.php'
