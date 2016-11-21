@@ -31,7 +31,18 @@ def getModems():
         try:
             lat = doc['_id']['Latitude']
             lon = doc['_id']['Longitude']
-            info = '<h3>Modem ID:{} ({})</h3>'.format(doc['_id']['Modem ID'], doc['_id']['Date'])
+            modemId = doc['_id']['Modem ID']
+            try:
+                with open(pathRenderModemCsv) as modemFile:
+                    for line in modemFile:
+                        row = line.strip().split(',')
+                        if row[0] == modemId:
+                            modemId = row[1]
+                            break
+            except FileNotFoundError:
+                pass
+            info = '<h3>Modem ID:{}</h3>'.format(modemId, doc['_id']['Date'])
+            info += '<h3>{}</h3>'.format(doc['_id']['Date'])
             for unit in doc['units']:
                 info += '<br>'
                 info += '{}: {}\t'.format('Unit ID', unit['Unit ID'])
@@ -73,7 +84,7 @@ class Map(object):
         return """<?php
     require_once('authenticate.php');
 ?>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="sources/css/style.css">
 <script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.12.3.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDScN9rVkda4l9rzwRT-xb-3jdCdnO_bY"></script>
 <script type="text/javascript">
@@ -118,7 +129,7 @@ class Map(object):
     <br>
     <button class="button buttonBlue" onclick="window.location.href='/settings.php'">settings</button>
 </div>
-<div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('/images/logo.png');">
+<div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('sources/images/logo.png');">
 </div>
 """.format(centerLat=centerLat, centerLon=centerLon,
            markersCode=markersCode)

@@ -8,7 +8,17 @@ def textPhp():
     mongoClient = MongoClient()
     db = mongoClient['gpsDB']
     currentState = db['currentState']
-    dataRows = "\n".join(["""<tr>
+    try:
+        renderModem = "\n".join(["""
+if(data=="{}"){{
+    return "{}";
+}}
+    """.format(*line.strip().split(',')) for line in open(pathRenderModemCsv)])
+    except FileNotFoundError:
+        renderModem = ''
+
+    dataRows = "\n".join(["""
+<tr>
     <td>{}</td>
     <td>{}</td>
     <td>{}</td>
@@ -23,7 +33,9 @@ def textPhp():
                 doc[attrNames[3]], doc[attrNames[4]], doc[attrNames[5]],
                 doc[attrNames[6]], doc[attrNames[7]], doc[attrNames[8]],
                 doc[attrNames[9]]) for doc in currentState.find()])
-    return """<?php
+
+    return """
+<?php
     require_once('authenticate.php');
 ?>
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
@@ -86,7 +98,15 @@ def textPhp():
             ],
             stateSave: true,
             "scrollY": 200,
-            "scrollX": true
+            "scrollX": true,
+            "columnDefs": [
+            {{
+                "render": function ( data, type, row ) {{
+                    {renderModem}
+                    return data;
+                }},
+                "targets": 0
+            }}]
         }});
         // Event listener to the two range filtering inputs to redraw on input
         $('#min, #max').keyup( function() {{
@@ -126,11 +146,11 @@ def textPhp():
         </tr>
     </thead>
     <tbody>
-        {}
-    <div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('/images/logo.png');">
-    </div>
+        {dataRows}
+        <div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('sources/images/logo.png');">
+        </div>
     </tbody>
-</table>""".format(*attrNames, dataRows)
+</table>""".format(*attrNames, renderModem=renderModem, dataRows=dataRows)
 
 
 def createPhp():

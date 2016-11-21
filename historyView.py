@@ -8,6 +8,15 @@ def textPhp():
     mongoClient = MongoClient()
     db = mongoClient['gpsDB']
     history = db['history']
+    try:
+        renderModem = "\n".join(["""
+if(data=="{}"){{
+    return "{}";
+}}
+    """.format(*line.strip().split(',')) for line in open(pathRenderModemCsv)])
+    except FileNotFoundError:
+        renderModem = ''
+
     dataRows = "\n".join(["""<tr>
     <td>{}</td>
     <td>{}</td>
@@ -86,7 +95,15 @@ def textPhp():
             ],
             stateSave: true,
             "scrollY": 200,
-            "scrollX": true
+            "scrollX": true,
+            "columnDefs": [
+            {{
+                "render": function ( data, type, row ) {{
+                    {renderModem}
+                    return data;
+                }},
+                "targets": 0
+            }}]
         }});
         // Event listener to the two range filtering inputs to redraw on input
         $('#min, #max').keyup( function() {{
@@ -124,11 +141,11 @@ def textPhp():
     </tr>
     </thead>
     <tbody>
-        {}
-    <div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('/images/logo.png');">
+        {dataRows}
+    <div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('sources/images/logo.png');">
     </div>
     </tbody>
-</table>""".format(*attrNames, dataRows)
+</table>""".format(*attrNames, renderModem=renderModem, dataRows=dataRows)
 
 
 def createPhp():
