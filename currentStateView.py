@@ -97,15 +97,19 @@ def textPhp():
 <table border="0" cellspacing="5" cellpadding="5">
     <tbody>
         <tr>
-            <td>Minimum date:</td>
-            <td><input type="text" id="min" name="min"></td>
+            <td>
+                <input type="text" id="min" name="min" placeholder="Minimum date:">
+            </td>
         </tr>
         <tr>
-            <td>Maximum date:</td>
-            <td><input type="text" id="max" name="max"></td>
+            <td>
+                <input type="text" id="max" name="max" placeholder="Maximum date:">
+            </td>
         </tr>
     </tbody>
 </table>
+
+
 <table id="currentState_table" class="display" cellspacing="0" width="100%">
     <thead>
         <tr>
