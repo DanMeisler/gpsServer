@@ -46,13 +46,13 @@ def getRowFromData(aData, time):
         if (not lat) or (not lon):
             return None
         for name, area in getAreas(pathAreas):
-            if polygon.point_inside_polygon(lat, lon, area):
+            if polygon.point_inside_polygon(lon, lat, area):  # areas as list of (lon, lat) pairs
                 placeName = name
                 break
         row = {attrNames[0]: attrValues[0],
                attrNames[1]: attrValues[1],
                attrNames[2]: '$' + attrValues[2],
-               attrNames[3]: attrValues[3],
+               attrNames[3]: attrValues[3][:1] + '.' + attrValues[3][1:],
                attrNames[4]: attrValues[4],
                attrNames[5]: attrValues[5],
                attrNames[6]: lat,

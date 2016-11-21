@@ -114,6 +114,9 @@ class Map(object):
     <br>
     <br>
     <button class="button buttonBlue" onclick="window.location.href='/history.php'">history view</button>
+    <br>
+    <br>
+    <button class="button buttonBlue" onclick="window.location.href='/settings.php'">settings</button>
 </div>
 <div style="position: fixed; width: 229px; height: 151px; bottom: 10;left: 10; background-image: url('/images/logo.png');">
 </div>
