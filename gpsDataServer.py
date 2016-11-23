@@ -5,8 +5,6 @@ import socket
 from datetime import datetime
 from threading import Thread
 import polygon
-import historyView
-import currentStateView
 from consts import *
 from pymongo import MongoClient, errors
 
@@ -90,9 +88,6 @@ def clientHandler(conn, client_address):
                 print('mongodb disconnected...')
                 os.startfile(mongodPath)
                 print('mongodb connected again')
-    # update php files
-    historyView.createPhp()
-    currentStateView.createPhp()
     print('disconnecting from {}:{} '.format(*client_address))
 
 
