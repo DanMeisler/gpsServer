@@ -7,7 +7,6 @@ from threading import Thread
 import polygon
 import historyView
 import currentStateView
-import gMapsViewPoints
 from consts import *
 from pymongo import MongoClient, errors
 
@@ -78,8 +77,8 @@ def clientHandler(conn, client_address):
         except:
             break
     conn.close()
-    time = datetime.now()
-    for line in allData.splitlines():
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for line in allData.split(';'):
         print('{}:{} sent ({} chars) : "{}"'.format(*client_address, len(line), line))
         rowOfData = getRowFromData(line, time)
         if rowOfData:
@@ -94,7 +93,6 @@ def clientHandler(conn, client_address):
     # update php files
     historyView.createPhp()
     currentStateView.createPhp()
-    gMapsViewPoints.createPhp()
     print('disconnecting from {}:{} '.format(*client_address))
 
 
