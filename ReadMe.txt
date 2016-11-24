@@ -1,7 +1,7 @@
 installation:
 1) install mongodb Community Server
 2) install python 3.5.2
-3) install pymongo(using pip)
+3) install pymongo and fastkml(using pip)
 4) install eds 16.1.1
 5) install mongo v11 X86 TS extension (php 5.6)
 6) add "extension=php_mongo.dll" to php.ini (php 5.6)

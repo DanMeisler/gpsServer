@@ -41,11 +41,12 @@ def getRowFromData(aData, time):
         lat = latLonParse(gps_data[2][:2], gps_data[2][2:], gps_data[3])
         lon = latLonParse(gps_data[4][:3], gps_data[4][3:], gps_data[5])
         if (not lat) or (not lon):
-            return None
-        for name, area in getAreas(pathAreas):
-            if polygon.point_inside_polygon(lon, lat, area):  # areas as list of (lon, lat) pairs
-                placeName = name
-                break
+            pass  # return None TODO
+        else:
+            for name, area in getAreas(pathAreas):
+                if polygon.point_inside_polygon(lon, lat, area):  # areas as list of (lon, lat) pairs
+                    placeName = name
+                    break
         row = {attrNames[0]: attrValues[0],
                attrNames[1]: attrValues[1],
                attrNames[2]: '$' + attrValues[2],
