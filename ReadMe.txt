@@ -8,3 +8,4 @@ installion:
 7) port forwording
 8) download py file from github
 9) put site files into eds-www
+10) change the Listen row in httpd.conf from 127.0.0.1:80 to *:80
