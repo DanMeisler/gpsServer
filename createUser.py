@@ -9,7 +9,7 @@ db = mongoClient['gpsDB']
 users = db['users']
 
 try:
-    user = {'username': 'Admin', 'password': '1234', 'isAdmin': True}
+    user = {'username': 'Admin', 'password': '1234', 'isAdmin': 'true'}
     users.delete_many({'username': 'Admin'})
     users.insert_one(user)
     sys.exit(0)

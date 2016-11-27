@@ -11,16 +11,16 @@ def getAreas(pathOfKml):
     k = KML()
     k.from_string(text)
     document = list(k.features())[0]
-    folder = list(document.features())[0]
-    for p in folder.features():
-        points = '{}'.format(p.geometry).replace(' 0.0', '').replace(', ', ',')[9:-2].split(',')
-        poly = []
-        for point in points:
-            poly.append((float(point.split(' ')[0]), float(point.split(' ')[1])))
-        yield (p.name, poly)
+    for folder in document.features():
+        for p in folder.features():
+            points = '{}'.format(p.geometry).replace(' 0.0', '').replace(', ', ',')[9:-2].split(',')
+            poly = []
+            for point in points:
+                poly.append((float(point.split(' ')[0]), float(point.split(' ')[1])))
+            yield (p.name, poly)
 
 
 if __name__ == '__main__':
-    path = r'c:\Users\Meisler\Desktop\a.kml'
+    path = r'c:\Users\Meisler\Desktop\כלובים.kml'
     for area in getAreas(pathOfKml=path):
         print(area)
