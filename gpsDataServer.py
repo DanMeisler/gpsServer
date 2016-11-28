@@ -35,12 +35,13 @@ def latLonParse(degrees, minutes, direction):
 
 def getRowFromData(aData, time):
     try:
-        attrValues = re.split("MID|UID|\$|VB|TPM|TPS", aData)[1:]
+        attrValues = re.split('MID|UID|\$|VB|TPM|TPS', aData)[1:]
         placeName = ''
         gps_data = attrValues[2].split(',')
         lat = latLonParse(gps_data[2][:2], gps_data[2][2:], gps_data[3])
         lon = latLonParse(gps_data[4][:3], gps_data[4][3:], gps_data[5])
-        if (not lat) or (not lon):
+        satellitesCount = int(gps_data[7])
+        if (not lat) or (not lon) or (satellitesCount < 4):
             pass  # return None TODO
         else:
             for name, area in getAreas(pathAreas):
@@ -53,8 +54,8 @@ def getRowFromData(aData, time):
                attrNames[3]: attrValues[3][:1] + '.' + attrValues[3][1:],
                attrNames[4]: attrValues[4],
                attrNames[5]: attrValues[5],
-               attrNames[6]: lat,
-               attrNames[7]: lon,
+               attrNames[6]: str(lat),
+               attrNames[7]: str(lon),
                attrNames[8]: placeName,
                attrNames[9]: time}
         return row

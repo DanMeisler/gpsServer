@@ -21,6 +21,6 @@ def getAreas(pathOfKml):
 
 
 if __name__ == '__main__':
-    path = r'c:\Users\Meisler\Desktop\כלובים.kml'
+    path = r'C:\Program Files (x86)\EasyPHP-Devserver-16.1\eds-www\sources\kml\uploads\areas.kml'
     for area in getAreas(pathOfKml=path):
         print(area)
