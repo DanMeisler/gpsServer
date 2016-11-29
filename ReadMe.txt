@@ -12,5 +12,5 @@ installation:
 12) download site files from github into eds-www
 13) change the Listen row in httpd.conf from 127.0.0.1:80 to *:80
 14) create c:\data\db folder for mongodb
-
+15) add ports to firewall
 
