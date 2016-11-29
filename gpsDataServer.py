@@ -34,68 +34,43 @@ def latLonParse(degrees, minutes, direction):
 
 
 def getRowsFromData(aData):
-    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    unitAttrValues = re.split('UID|UBAT|MVOL|CSQ|NETCON|MCUTMP|EXTTMP|LOC|SPEED|TAGS', aData)[1:]
-    loc = unitAttrValues[7]
-    gpsData = loc.split(',')
-    lat = latLonParse(gpsData[2][:2], gpsData[2][2:], gpsData[3])
-    lon = latLonParse(gpsData[4][:3], gpsData[4][3:], gpsData[5])
-    placeName = ''
-    if lat and lon:
-        for name, area in getAreas(pathAreas):
-            if polygon.point_inside_polygon(lon, lat, area):  # areas as list of (lon, lat) pairs
-                placeName = name
-                break
-    tags = unitAttrValues[9].split(',')
-    for tag in tags:
-        tagAttrValues = re.split('TID|VID', tag)[1:]
-        row = {
-            'DATE': date,
-            'UID': unitAttrValues[0],
-            'UBAT': unitAttrValues[1],
-            'MVOL': unitAttrValues[2],
-            'CSQ': unitAttrValues[3],
-            'NETCON': unitAttrValues[4],
-            'MCUTMP': unitAttrValues[5],
-            'EXTTMP': unitAttrValues[6],
-            'AREA': placeName,
-            'LOC': loc,
-            'LATITUDE': str(lat),
-            'LONGITUDE': str(lon),
-            'SPEED': unitAttrValues[8],
-            'TID': tagAttrValues[0],
-            'VID': tagAttrValues[1]
-        }
-        yield row
-
-
-def getRowFromData(aData, time):
     try:
-        attrValues = re.split('MID|UID|\$|VB|TPM|TPS', aData)[1:]
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        unitAttrValues = re.split('UID|UBAT|MVOLIND|UCSQ|NETCON|MCUTMP|EXTTMP|LOC|SPEED|TAGS', aData)[1:]
+        loc = unitAttrValues[7]
+        gpsData = loc.split(',')
+        lat = latLonParse(gpsData[2][:2], gpsData[2][2:], gpsData[3])
+        lon = latLonParse(gpsData[4][:3], gpsData[4][3:], gpsData[5])
         placeName = ''
-        gps_data = attrValues[2].split(',')
-        lat = latLonParse(gps_data[2][:2], gps_data[2][2:], gps_data[3])
-        lon = latLonParse(gps_data[4][:3], gps_data[4][3:], gps_data[5])
-        satellitesCount = int(gps_data[7])
-        if (not lat) or (not lon) or (satellitesCount < 4):
-            pass  # return None TODO
-        else:
+        if lat and lon:
             for name, area in getAreas(pathAreas):
                 if polygon.point_inside_polygon(lon, lat, area):  # areas as list of (lon, lat) pairs
                     placeName = name
                     break
-        row = {attrNames[0]: attrValues[0],
-               attrNames[1]: attrValues[1],
-               attrNames[2]: '$' + attrValues[2],
-               attrNames[3]: attrValues[3][:1] + '.' + attrValues[3][1:],
-               attrNames[4]: attrValues[4],
-               attrNames[5]: attrValues[5],
-               attrNames[6]: str(lat),
-               attrNames[7]: str(lon),
-               attrNames[8]: placeName,
-               attrNames[9]: time}
-        return row
-    except:
+        tags = unitAttrValues[9].split(',')
+        for tag in tags:
+            tagAttrValues = re.split('TID|TBAT|TTMP', tag)[1:]
+            row = {
+                'DATE': date,
+                'UID': unitAttrValues[0],
+                'TID': tagAttrValues[0],
+                'TTMP': tagAttrValues[0],
+                'TBAT': tagAttrValues[1],
+                'UBAT': unitAttrValues[1],
+                'MVOLIND': unitAttrValues[2],
+                'UCSQ': unitAttrValues[3],
+                'NETCON': unitAttrValues[4],
+                'MCUTMP': unitAttrValues[5],
+                'EXTTMP': unitAttrValues[6],
+                'AREA': placeName,
+                'LOC': loc,
+                'LATITUDE': str(lat),
+                'LONGITUDE': str(lon),
+                'SPEED': unitAttrValues[8]
+            }
+            yield row
+    except Exception as e:
+        # print(e)
         return None
 
 
@@ -113,30 +88,17 @@ def clientHandler(conn, client_address):
         except:
             break
     conn.close()
-    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    for line in allData.split(';'):
-        print('{}:{} sent ({} chars) : "{}"'.format(*client_address, len(line), line))
-        rowOfData = getRowFromData(line, time)
-        if rowOfData:
+    print('{}:{} sent ({} chars) : "{}"'.format(*client_address, len(allData), allData))
+    for row in getRowsFromData(allData):
+        if row:
             try:
-                history.insert_one(rowOfData)
-                currentState.delete_many({attrNames[1]: rowOfData[attrNames[1]]})
-                currentState.insert_one(rowOfData)
+                history.insert_one(row)
+                currentState.delete_many({'TID': row['TID']})
+                currentState.insert_one(row)
             except errors.ServerSelectionTimeoutError:
                 print('mongodb disconnected...')
                 os.startfile(mongodPath)
                 print('mongodb connected again')
-    # new implementation using getRowsFromData function
-    # for row in getRowsFromData(allData):
-    #     if row#:
-    #         try:
-    #             history.insert_one(rowOfData)
-    #             currentState.delete_many({attrNames[1]: rowOfData[attrNames[1]]})
-    #             currentState.insert_one(rowOfData)
-    #         except errors.ServerSelectionTimeoutError:
-    #             print('mongodb disconnected...')
-    #             os.startfile(mongodPath)
-    #             print('mongodb connected again')
     print('disconnecting from {}:{} '.format(*client_address))
 
 
