@@ -40,6 +40,12 @@ def getRowsFromData(aData):
     gpsData = loc.split(',')
     lat = latLonParse(gpsData[2][:2], gpsData[2][2:], gpsData[3])
     lon = latLonParse(gpsData[4][:3], gpsData[4][3:], gpsData[5])
+    placeName = ''
+    if lat and lon:
+        for name, area in getAreas(pathAreas):
+            if polygon.point_inside_polygon(lon, lat, area):  # areas as list of (lon, lat) pairs
+                placeName = name
+                break
     tags = unitAttrValues[9].split(',')
     for tag in tags:
         tagAttrValues = re.split('TID|VID', tag)[1:]
@@ -52,6 +58,7 @@ def getRowsFromData(aData):
             'NETCON': unitAttrValues[4],
             'MCUTMP': unitAttrValues[5],
             'EXTTMP': unitAttrValues[6],
+            'AREA': placeName,
             'LOC': loc,
             'LATITUDE': str(lat),
             'LONGITUDE': str(lon),
