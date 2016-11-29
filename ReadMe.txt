@@ -8,6 +8,9 @@ installation:
 8) put php directory in the system path variable (check that lsass.dll is in the directory)
 9) make static ip address
 10) port forwarding
-11) download py file from github
-12) put site files into eds-www
+11) download py files from github
+12) download site files from github into eds-www
 13) change the Listen row in httpd.conf from 127.0.0.1:80 to *:80
+14) create c:\data\db folder for mongodb
+
+

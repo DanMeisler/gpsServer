@@ -33,6 +33,35 @@ def latLonParse(degrees, minutes, direction):
         return None
 
 
+def getRowsFromData(aData):
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    unitAttrValues = re.split('UID|UBAT|MVOL|CSQ|NETCON|MCUTMP|EXTTMP|LOC|SPEED|TAGS', aData)[1:]
+    loc = unitAttrValues[7]
+    gpsData = loc.split(',')
+    lat = latLonParse(gpsData[2][:2], gpsData[2][2:], gpsData[3])
+    lon = latLonParse(gpsData[4][:3], gpsData[4][3:], gpsData[5])
+    tags = unitAttrValues[9].split(',')
+    for tag in tags:
+        tagAttrValues = re.split('TID|VID', tag)[1:]
+        row = {
+            'DATE': date,
+            'UID': unitAttrValues[0],
+            'UBAT': unitAttrValues[1],
+            'MVOL': unitAttrValues[2],
+            'CSQ': unitAttrValues[3],
+            'NETCON': unitAttrValues[4],
+            'MCUTMP': unitAttrValues[5],
+            'EXTTMP': unitAttrValues[6],
+            'LOC': loc,
+            'LATITUDE': str(lat),
+            'LONGITUDE': str(lon),
+            'SPEED': unitAttrValues[8],
+            'TID': tagAttrValues[0],
+            'VID': tagAttrValues[1]
+        }
+        yield row
+
+
 def getRowFromData(aData, time):
     try:
         attrValues = re.split('MID|UID|\$|VB|TPM|TPS', aData)[1:]
@@ -90,6 +119,17 @@ def clientHandler(conn, client_address):
                 print('mongodb disconnected...')
                 os.startfile(mongodPath)
                 print('mongodb connected again')
+    # new implementation using getRowsFromData function
+    # for row in getRowsFromData(allData):
+    #     if row#:
+    #         try:
+    #             history.insert_one(rowOfData)
+    #             currentState.delete_many({attrNames[1]: rowOfData[attrNames[1]]})
+    #             currentState.insert_one(rowOfData)
+    #         except errors.ServerSelectionTimeoutError:
+    #             print('mongodb disconnected...')
+    #             os.startfile(mongodPath)
+    #             print('mongodb connected again')
     print('disconnecting from {}:{} '.format(*client_address))
 
 
