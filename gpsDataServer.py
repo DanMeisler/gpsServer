@@ -70,7 +70,7 @@ def getRowsFromData(aData):
             }
             yield row
     except Exception as e:
-        print('bad data: ({})'.format(e))
+        print('"{}" is wrong format ({})'.format(aData, e))
         return None
 
 
@@ -82,13 +82,14 @@ def clientHandler(conn, client_address):
         try:
             data = conn.recv(1024).decode('utf-8')
             if data:
+                print('{}:{} sent ({} chars) : "{}"'.format(*client_address, len(data), data))
                 allData += data
             else:
                 break
         except:
             break
     conn.close()
-    print('{}:{} sent ({} chars) : "{}"'.format(*client_address, len(allData), allData))
+
     for row in getRowsFromData(allData):
         if row:
             try:
