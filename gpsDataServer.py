@@ -70,7 +70,7 @@ def getRowsFromData(aData):
             }
             yield row
     except Exception as e:
-        print('bad data: ({})'.format(e))
+        # print(e)
         return None
 
 
