@@ -1,4 +1,8 @@
+import sys
+err = sys.stderr
+sys.stderr = open('nul', 'w')  # to silent lxml error (work on windows only)
 from fastkml import KML
+sys.stderr = err
 
 
 def getAreas(pathOfKml):
