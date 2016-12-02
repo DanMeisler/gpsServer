@@ -33,11 +33,15 @@ def latLonParse(degrees, minutes, direction):
 def getRowsFromData(aData):
     try:
         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        isGPSValid = True
         unitAttrValues = re.split('UID|UBAT|MVOLIND|UCSQ|NETCON|MCUTMP|EXTTMP|LOC|SPEED|TAGS', aData)[1:]
         loc = unitAttrValues[7]
         gpsData = loc.split(',')
         lat = latLonParse(gpsData[2][:2], gpsData[2][2:], gpsData[3])
         lon = latLonParse(gpsData[4][:3], gpsData[4][3:], gpsData[5])
+        satellitesCount = int(gpsData[7])
+        if (not lat) or (not lon) or (satellitesCount < 4):
+            isGPSValid = False
         tags = unitAttrValues[9].split(',')
         for tag in tags:
             tagAttrValues = re.split('TID|TBAT|TTMP', tag)[1:]
@@ -58,10 +62,10 @@ def getRowsFromData(aData):
                 'LONGITUDE': str(lon),
                 'SPEED': unitAttrValues[8]
             }
-            yield row
+            yield row, isGPSValid
     except Exception as e:
         print('"{}" is wrong format ({})'.format(aData, e))
-        return None
+        return None, False
 
 
 def clientHandler(conn, client_address):
@@ -80,12 +84,13 @@ def clientHandler(conn, client_address):
             break
     conn.close()
 
-    for row in getRowsFromData(allData):
+    for row, isGPSValid in getRowsFromData(allData):
         if row:
             try:
                 history.insert_one(row)
-                currentState.delete_many({'TID': row['TID']})
-                currentState.insert_one(row)
+                if isGPSValid:
+                    currentState.delete_many({'TID': row['TID']})
+                    currentState.insert_one(row)
             except errors.ServerSelectionTimeoutError:
                 print('mongodb disconnected...')
                 os.startfile(mongodPath)

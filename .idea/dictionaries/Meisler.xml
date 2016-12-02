@@ -23,6 +23,7 @@
       <w>netcon</w>
       <w>pdfmake</w>
       <w>placemarks</w>
+      <w>pymongo</w>
       <w>rawgit</w>
       <w>settimeout</w>
       <w>startfile</w>
