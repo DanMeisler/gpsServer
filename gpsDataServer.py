@@ -4,6 +4,7 @@ import socket
 from datetime import datetime
 from threading import Thread
 from pymongo import MongoClient, errors
+import areaUpdater
 
 
 def get_ip():
@@ -44,19 +45,21 @@ def getRowsFromData(aData):
             isGPSValid = False
         tags = unitAttrValues[9].split(',')
         for tag in tags:
-            tagAttrValues = re.split('TID|TBAT|TTMP', tag)[1:]
+            tagAttrValues = re.split('TID|TBAT|TTMP|TRSSI', tag)[1:]
             row = {
                 'DATE': date,
                 'UID': unitAttrValues[0],
                 'TID': tagAttrValues[0],
                 'TBAT': tagAttrValues[1],
                 'TTMP': tagAttrValues[2],
+                'TRSSI': tagAttrValues[3],
                 'UBAT': unitAttrValues[1],
                 'MVOLIND': unitAttrValues[2],
-                'UCSQ': unitAttrValues[3],
+                'URSSI': unitAttrValues[3],
                 'NETCON': unitAttrValues[4],
                 'MCUTMP': unitAttrValues[5],
                 'EXTTMP': unitAttrValues[6],
+                'AREA': areaUpdater.getAreaFromDoc(lon, lat),
                 'LOC': loc,
                 'LATITUDE': str(lat),
                 'LONGITUDE': str(lon),
