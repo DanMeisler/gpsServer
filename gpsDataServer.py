@@ -1,16 +1,20 @@
-import os
+# import os
 import re
 import socket
 from datetime import datetime
 from threading import Thread
 from pymongo import MongoClient, errors
 import areaUpdater
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
 
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        # doesn't even have to be reachable
+        # doesn't even have to be reachable#
         s.connect(('10.255.255.255', 0))
         IP = s.getsockname()[0]
     except:
@@ -31,16 +35,47 @@ def latLonParse(degrees, minutes, direction):
         return None
 
 
+def sendMail(info):
+    print('sending mail...')
+    gmail_sender = 'trusthashtil@gmail.com'
+    gmail_passwd = 'TH098765'
+    TO = 'trusthashtil@gmail.com'
+    SUBJECT = 'בדיקה'
+    TEXT = '{}\n'.format(info['uid'])
+    if info['oldArea'] is not '':
+        TEXT += 'Exited from {}\n'.format(info['oldArea'])
+    if info['area'] is not '':
+        TEXT += 'Entered to {}\n'.format(info['area'])
+    TEXT += 'with {} tags in it\n'.format(info['numberOfTags'])
+    msg = MIMEText(TEXT.encode('utf-8'), 'plain', 'utf-8')
+    msg['From'] = gmail_sender
+    msg['Subject'] = Header(SUBJECT, 'utf-8')
+    msg['To'] = TO
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    try:
+        server.login(gmail_sender, gmail_passwd)
+        server.sendmail(gmail_sender, [TO], msg.as_string())
+        print('mail sent!')
+    except Exception as e:
+        print("can't send email ({})".format(e))
+    finally:
+        server.quit()
+
+
+
 def getRowsFromData(aData):
     try:
+        rows = []
         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         isGPSValid = True
         unitAttrValues = re.split('UID|UBAT|MVOLIND|URSSI|NETCON|MCUTMP|EXTTMP|LOC|SPEED|TAGS', aData)[1:]
+        uid = unitAttrValues[0]
         loc = unitAttrValues[7]
         gpsData = loc.split(',')
         lat = latLonParse(gpsData[2][:2], gpsData[2][2:], gpsData[3])
         lon = latLonParse(gpsData[4][:3], gpsData[4][3:], gpsData[5])
         satellitesCount = int(gpsData[7])
+        area = areaUpdater.getAreaByLonAndLat(lon, lat)
         if (not lat) or (not lon) or (satellitesCount < 4):
             isGPSValid = False
         tags = unitAttrValues[9].split(',')
@@ -48,7 +83,7 @@ def getRowsFromData(aData):
             tagAttrValues = re.split('TID|TBAT|TTMP|TRSSI', tag)[1:]
             row = {
                 'DATE': date,
-                'UID': unitAttrValues[0],
+                'UID': uid,
                 'TID': tagAttrValues[0],
                 'TBAT': tagAttrValues[1],
                 'TTMP': tagAttrValues[2],
@@ -59,13 +94,14 @@ def getRowsFromData(aData):
                 'NETCON': unitAttrValues[4],
                 'MCUTMP': unitAttrValues[5],
                 'EXTTMP': unitAttrValues[6],
-                'AREA': areaUpdater.getAreaByLonAndLat(lon, lat),
+                'AREA': area,
                 'LOC': loc,
                 'LATITUDE': str(lat),
                 'LONGITUDE': str(lon),
                 'SPEED': unitAttrValues[8]
             }
-            yield row, isGPSValid
+            rows.append(row)
+        return uid, area, isGPSValid, rows
     except Exception as e:
         print('"{}" is wrong format ({})'.format(aData, e))
         return None, False
@@ -86,8 +122,12 @@ def clientHandler(conn, client_address):
         except:
             break
     conn.close()
-
-    for row, isGPSValid in getRowsFromData(allData):
+    print('disconnecting from {}:{} '.format(*client_address))
+    uid, area, isGPSValid, rows = getRowsFromData(allData)
+    oldArea = ''
+    if currentState.find_one({'UID': uid}):
+        oldArea = (currentState.find_one({'UID': uid})['AREA'])
+    for row in rows:
         if row:
             try:
                 history.insert_one(row)
@@ -99,8 +139,12 @@ def clientHandler(conn, client_address):
                 # os.startfile(mongodPath)
                 # print('mongodb connected again')
                 pass
-    print('disconnecting from {}:{} '.format(*client_address))
-
+    try:
+        # send mail when area changes and gps is valid
+        if isGPSValid and (oldArea != area):
+            sendMail({'uid': uid, 'oldArea': oldArea, 'area': area, 'numberOfTags': len(rows)})
+    except Exception as e:
+        print("didn't send an email ({})".format(e))
 
 # mongodPath = r'C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe'
 # os.startfile(mongodPath)

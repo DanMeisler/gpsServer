@@ -37,10 +37,6 @@ def point_inside_polygon(x, y, poly):
     return inside
 
 
-def sendEmail(doc):
-    pass
-
-
 def getAreaByLonAndLat(longitude, latitude):
     if not longitude or not latitude:
         return ''
@@ -56,8 +52,7 @@ def updateAreasOnCollection(collection):
         latitude = float(doc['LATITUDE'])
         newArea = getAreaByLonAndLat(longitude, latitude)
         if doc['AREA'] != newArea:
-            sendEmail(doc)
-            # update the area
+            pass  # update the area
 
 
 def updateEveryNSeconds(collection, seconds=60):
