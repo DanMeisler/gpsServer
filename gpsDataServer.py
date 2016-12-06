@@ -35,7 +35,7 @@ def getRowsFromData(aData):
     try:
         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         isGPSValid = True
-        unitAttrValues = re.split('UID|UBAT|MVOLIND|UCSQ|NETCON|MCUTMP|EXTTMP|LOC|SPEED|TAGS', aData)[1:]
+        unitAttrValues = re.split('UID|UBAT|MVOLIND|URSSI|NETCON|MCUTMP|EXTTMP|LOC|SPEED|TAGS', aData)[1:]
         loc = unitAttrValues[7]
         gpsData = loc.split(',')
         lat = latLonParse(gpsData[2][:2], gpsData[2][2:], gpsData[3])
@@ -59,7 +59,7 @@ def getRowsFromData(aData):
                 'NETCON': unitAttrValues[4],
                 'MCUTMP': unitAttrValues[5],
                 'EXTTMP': unitAttrValues[6],
-                'AREA': areaUpdater.getAreaFromDoc(lon, lat),
+                'AREA': areaUpdater.getAreaByLonAndLat(lon, lat),
                 'LOC': loc,
                 'LATITUDE': str(lat),
                 'LONGITUDE': str(lon),

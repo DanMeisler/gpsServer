@@ -42,6 +42,8 @@ def sendEmail(doc):
 
 
 def getAreaByLonAndLat(longitude, latitude):
+    if not longitude or not latitude:
+        return ''
     for coordinates, placeName in getAreas():
             if point_inside_polygon(longitude, latitude, coordinates):
                 return placeName
