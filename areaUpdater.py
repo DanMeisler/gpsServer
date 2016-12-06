@@ -2,6 +2,9 @@ from xml.etree import ElementTree as Et
 from pymongo import MongoClient
 from threading import Thread
 from time import sleep
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
 
 pathOfKml = r'C:\Program Files (x86)\EasyPHP-Devserver-16.1\eds-www\sources\kml\uploads\areas.kml'
 
@@ -59,6 +62,33 @@ def updateEveryNSeconds(collection, seconds=60):
     while True:
         updateAreasOnCollection(collection)
         sleep(seconds)
+
+
+def sendMail(info):
+    print('sending mail...')
+    gmail_sender = 'trusthashtil@gmail.com'
+    gmail_passwd = 'TH098765'
+    TO = 'trusthashtil@gmail.com'
+    SUBJECT = '{} changed area'.format(info['uid'])
+    TEXT = '{}\n'.format(info['uid'])
+    if info['oldArea'] is not '':
+        TEXT += 'Exited from {}\n'.format(info['oldArea'])
+    if info['area'] is not '':
+        TEXT += 'Entered to {}\n'.format(info['area'])
+    TEXT += 'with {} tags in it\n'.format(info['numberOfTags'])
+    msg = MIMEText(TEXT.encode('utf-8'), 'plain', 'utf-8')
+    msg['From'] = gmail_sender
+    msg['Subject'] = Header(SUBJECT, 'utf-8')
+    msg['To'] = TO
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    try:
+        server.login(gmail_sender, gmail_passwd)
+        server.sendmail(gmail_sender, [TO], msg.as_string())
+        print('mail sent!')
+    except Exception as e:
+        print("can't send email ({})".format(e))
+    finally:
+        server.quit()
 
 
 if __name__ == '__main__':

@@ -5,10 +5,6 @@ from datetime import datetime
 from threading import Thread
 from pymongo import MongoClient, errors
 import areaUpdater
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.header import Header
 
 
 def get_ip():
@@ -33,34 +29,6 @@ def latLonParse(degrees, minutes, direction):
         return dd
     except:
         return None
-
-
-def sendMail(info):
-    print('sending mail...')
-    gmail_sender = 'trusthashtil@gmail.com'
-    gmail_passwd = 'TH098765'
-    TO = 'trusthashtil@gmail.com'
-    SUBJECT = 'בדיקה'
-    TEXT = '{}\n'.format(info['uid'])
-    if info['oldArea'] is not '':
-        TEXT += 'Exited from {}\n'.format(info['oldArea'])
-    if info['area'] is not '':
-        TEXT += 'Entered to {}\n'.format(info['area'])
-    TEXT += 'with {} tags in it\n'.format(info['numberOfTags'])
-    msg = MIMEText(TEXT.encode('utf-8'), 'plain', 'utf-8')
-    msg['From'] = gmail_sender
-    msg['Subject'] = Header(SUBJECT, 'utf-8')
-    msg['To'] = TO
-    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    try:
-        server.login(gmail_sender, gmail_passwd)
-        server.sendmail(gmail_sender, [TO], msg.as_string())
-        print('mail sent!')
-    except Exception as e:
-        print("can't send email ({})".format(e))
-    finally:
-        server.quit()
-
 
 
 def getRowsFromData(aData):
@@ -142,9 +110,10 @@ def clientHandler(conn, client_address):
     try:
         # send mail when area changes and gps is valid
         if isGPSValid and (oldArea != area):
-            sendMail({'uid': uid, 'oldArea': oldArea, 'area': area, 'numberOfTags': len(rows)})
+            areaUpdater.sendMail({'uid': uid, 'oldArea': oldArea, 'area': area, 'numberOfTags': len(rows)})
     except Exception as e:
         print("didn't send an email ({})".format(e))
+
 
 # mongodPath = r'C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe'
 # os.startfile(mongodPath)
