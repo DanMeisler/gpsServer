@@ -92,13 +92,15 @@ def clientHandler(conn, client_address):
                     currentState.delete_many({'TID': row['TID']})
                     currentState.insert_one(row)
             except errors.ServerSelectionTimeoutError:
-                print('mongodb disconnected...')
-                os.startfile(mongodPath)
-                print('mongodb connected again')
+                # print('mongodb disconnected...')
+                # os.startfile(mongodPath)
+                # print('mongodb connected again')
+                pass
     print('disconnecting from {}:{} '.format(*client_address))
 
-mongodPath = r'C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe'
-os.startfile(mongodPath)
+
+# mongodPath = r'C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe'
+# os.startfile(mongodPath)
 mongoClient = MongoClient()
 db = mongoClient['gpsDB']
 history = db['history']

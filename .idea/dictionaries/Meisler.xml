@@ -7,6 +7,7 @@
       <w>cellpadding</w>
       <w>cellspacing</w>
       <w>cloudflare</w>
+      <w>coords</w>
       <w>currenthtml</w>
       <w>datatables</w>
       <w>defs</w>
@@ -22,6 +23,7 @@
       <w>mvolind</w>
       <w>netcon</w>
       <w>pdfmake</w>
+      <w>placemark</w>
       <w>placemarks</w>
       <w>pymongo</w>
       <w>rawgit</w>
