@@ -92,9 +92,11 @@ def clientHandler(conn, client_address):
     conn.close()
     print('disconnecting from {}:{} '.format(*client_address))
     uid, area, isGPSValid, rows = getRowsFromData(allData)
-    oldArea = ''
-    if currentState.find_one({'UID': uid}):
-        oldArea = (currentState.find_one({'UID': uid})['AREA'])
+    oldAreaDoc = currentState.find_one({'UID': uid}, sort=[("DATE", -1)])
+    if oldAreaDoc:
+        oldArea = oldAreaDoc['AREA']
+    else:
+        oldArea = ''
     for row in rows:
         if row:
             try:
