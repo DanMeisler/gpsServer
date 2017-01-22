@@ -46,7 +46,7 @@ def getRowsFromData(aData):
         area = areaUpdater.getAreaByLonAndLat(lon, lat)
         if (not lat) or (not lon) or (satellitesCount < 4):
             isGPSValid = False
-        tags = unitAttrValues[9].split(',')
+        tags = unitAttrValues[9].split(',')[:-1]
         for tag in tags:
             tagAttrValues = re.split('TID|TBAT|TTMP|TRSSI', tag)[1:]
             row = {
