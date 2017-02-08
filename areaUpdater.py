@@ -67,7 +67,6 @@ def updateEveryNSeconds(collection, seconds=60):
 def sendMail(info):
     print('sending mail...')
     gmail_sender = 'trusthashtil@gmail.com'
-    gmail_passwd = 'TH098765'
     TO = 'trusthashtil@gmail.com'
     SUBJECT = '{} changed area'.format(info['uid'])
     TEXT = '{}\n'.format(info['uid'])
