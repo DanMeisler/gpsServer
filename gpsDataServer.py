@@ -102,8 +102,12 @@ def clientHandler(conn, client_address):
             try:
                 history.insert_one(row)
                 if isGPSValid:
-                    currentState.delete_many({'TID': row['TID']})
-                    currentState.insert_one(row)
+                    if row['TID'] == '0000':
+                        currentState.delete_many({'TID': row['TID'], 'UID': row['UID']})
+                        currentState.insert_one(row)
+                    else:
+                        currentState.delete_many({'TID': row['TID']})
+                        currentState.insert_one(row)
             except errors.ServerSelectionTimeoutError:
                 # print('mongodb disconnected...')
                 # os.startfile(mongodPath)
